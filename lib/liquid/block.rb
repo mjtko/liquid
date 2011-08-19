@@ -1,10 +1,10 @@
 module Liquid
 
   class Block < Tag
-    IsTag             = /^#{TagStart}/
-    IsVariable        = /^#{VariableStart}/
-    FullToken         = /^#{TagStart}\s*(\w+)\s*(.*?)(?:#{TagEndTrim}|#{TagEnd})$/
-    ContentOfVariable = /^#{VariableStart}(.*?)(?:#{VariableEndTrim}|#{VariableEnd})$/
+    IsTag             = /^#{TagStarts}/
+    IsVariable        = /^#{VariableStarts}/
+    FullToken         = /^#{TagStarts}\s*(\w+)\s*(.*?)#{TagEnds}$/
+    ContentOfVariable = /^#{VariableStarts}(.*?)#{VariableEnds}$/
 
     def parse(tokens)
       @nodelist ||= []
