@@ -39,6 +39,14 @@ class StandardFiltersTest < Test::Unit::TestCase
     assert_equal '1234567890', @filters.truncate('1234567890')
   end
 
+  def test_strip
+    assert_equal ['12','34'], @filters.split('12~34', '~')
+    assert_equal ['A? ',' ,Z'], @filters.split('A? ~ ~ ~ ,Z', '~ ~ ~')
+    assert_equal ['A?Z'], @filters.split('A?Z', '~')
+    # Regexp works although Liquid does not support.
+    assert_equal ['A','Z'], @filters.split('AxZ', /x/)
+  end
+
   def test_escape
     assert_equal '&lt;strong&gt;', @filters.escape('<strong>')
     assert_equal '&lt;strong&gt;', @filters.h('<strong>')
@@ -98,8 +106,8 @@ class StandardFiltersTest < Test::Unit::TestCase
 
     assert_equal nil, @filters.date(nil, "%B")
 
-    assert_equal "07/05/2006", @filters.date(1152078955, "%m/%d/%Y")
-    assert_equal "07/05/2006", @filters.date("1152078955", "%m/%d/%Y")
+    assert_equal "07/05/2006", @filters.date(1152098955, "%m/%d/%Y")
+    assert_equal "07/05/2006", @filters.date("1152098955", "%m/%d/%Y")
   end
 
 
@@ -163,6 +171,10 @@ class StandardFiltersTest < Test::Unit::TestCase
 
     assert_template_result "5", "{{ 15 | divided_by:3 }}"
     assert_template_result "Liquid error: divided by 0", "{{ 5 | divided_by:0 }}"
+  end
+
+  def test_modulo
+    assert_template_result "1", "{{ 3 | modulo:2 }}"
   end
 
   def test_append

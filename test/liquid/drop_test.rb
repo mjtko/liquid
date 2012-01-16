@@ -13,10 +13,6 @@ class ContextDrop < Liquid::Drop
     @context['forloop.index']
   end
 
-  def break
-    Breakpoint.breakpoint
-  end
-
   def before_method(method)
     return @context[method]
   end
@@ -154,5 +150,13 @@ class DropsTest < Test::Unit::TestCase
 
   def test_enumerable_drop_size
     assert_equal '3', Liquid::Template.parse( '{{collection.size}}').render('collection' => EnumerableDrop.new)
+  end
+
+  def test_empty_string_value_access
+    assert_equal '', Liquid::Template.parse('{{ product[value] }}').render('product' => ProductDrop.new, 'value' => '')
+  end
+
+  def test_nil_value_access
+    assert_equal '', Liquid::Template.parse('{{ product[value] }}').render('product' => ProductDrop.new, 'value' => nil)
   end
 end # DropsTest
