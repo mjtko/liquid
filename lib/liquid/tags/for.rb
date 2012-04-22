@@ -75,7 +75,8 @@ module Liquid
       collection = context[@collection_name]
       collection = collection.to_a if collection.is_a?(Range)
     
-      return render_else(context) unless collection.respond_to?(:each) 
+      # Maintains Ruby 1.8.7 String#each behaviour on 1.9
+      return render_else(context) unless iterable?(collection)
                                                  
       from = if @attributes['offset'] == 'continue'
         context.registers[:for][@name].to_i
@@ -123,6 +124,10 @@ module Liquid
       segments = []      
       index = 0      
       yielded = 0
+
+      # Maintains Ruby 1.8.7 String#each behaviour on 1.9
+      return [collection] if non_blank_string?(collection)
+
       collection.each do |item|         
                 
         if to && to <= index
@@ -145,6 +150,13 @@ module Liquid
         return @else_block ? [render_all(@else_block, context)] : ''
       end
 
+      def iterable?(collection)
+        collection.respond_to?(:each) || non_blank_string?(collection)
+      end
+
+      def non_blank_string?(collection)
+        collection.is_a?(String) && collection != ''
+      end
   end
 
   Template.register_tag('for', For)
